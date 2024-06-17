@@ -15,24 +15,34 @@ import androidx.navigation.NavController
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.segundoparcial.ui.theme.SegundoParcialTheme
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun Clima(navController: NavController, ciudad: String) {
     val apiKey = "5860473db9c726fdcf35b5c47e0aaa79"
-
     var res by remember { mutableStateOf<RespuestaClima?>(null) }
+    var forecast by remember { mutableStateOf<RespuestaPronosticoSemanal?>(null) }
     val coroutineScope = rememberCoroutineScope()
-
     LaunchedEffect(ciudad) {
         coroutineScope.launch {
             try {
-                res = RetrofitClient.instance.getCurrentWeather(ciudad, apiKey)
+                res = RetrofitClient.instance.getClimaActual(ciudad, apiKey)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-
+    LaunchedEffect(ciudad) {
+        coroutineScope.launch {
+            try {
+                forecast = RetrofitClient.instance.getPronosticoSemanal(ciudad, apiKey)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -80,6 +90,29 @@ fun Clima(navController: NavController, ciudad: String) {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Previsión para $ciudad",
+                fontSize = 40.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(20.dp)
+            )
+             Text(
+                text = "Actualmente la funcionalidad de previsión no está disponible ya que se requiere una subscripción paga.",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(20.dp)
+            )
+            Button(
+                onClick = { navController.navigateUp() },
+                modifier = Modifier.padding(20.dp)
+            ) {
+                Text("Volver")
+            }
+        }
         Button(
             onClick = { navController.navigateUp() },
             modifier = Modifier.padding(20.dp)
@@ -104,19 +137,19 @@ fun ClimaPreview() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Clima en Ciudad Ejemplo",
+            text = "",
             fontSize = 40.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )
         Text(
-            text = "Temperatura: 20 °C",
+            text = "",
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)
         )
         Text(
-            text = "Descripción: Despejado",
+            text = "",
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(20.dp)

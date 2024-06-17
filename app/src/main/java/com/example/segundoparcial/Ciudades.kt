@@ -1,4 +1,5 @@
 package com.example.segundoparcial
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,24 +17,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-
-
+import androidx.compose.foundation.lazy.items
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun Ciudades(navHostController: NavHostController) {
+fun Ciudades(navHostController: NavHostController, apiClima: ServicioAPIClima) {
     var ciudadIngresada by remember { mutableStateOf("") }
-    var acceso1 by remember { mutableStateOf("Buenos Aires") }
-    var acceso2 by remember { mutableStateOf("Paris") }
-    var acceso3 by remember { mutableStateOf("Miami") }
-    var acceso4 by remember { mutableStateOf("Barcelona") }
+    var ciudadesSugeridas by remember { mutableStateOf(listOf<Ciudad>()) }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -46,19 +46,40 @@ fun Ciudades(navHostController: NavHostController) {
             text = "Accesos Rápidos",
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        Botones(navHostController, acceso1, acceso2, acceso3, acceso4)
-
-
+        Botones(navHostController, "Buenos Aires", "Paris", "Miami", "Barcelona")
         OutlinedTextField(
             value = ciudadIngresada,
-            onValueChange = { ciudadIngresada = it },
-            label = { Text("Ingrese la ciudad") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Button(
-            onClick = {
-                navHostController.navigate("clima/$ciudadIngresada")
+            onValueChange = {
+                ciudadIngresada = it
+                coroutineScope.launch {
+                    delay(500)
+                    if (ciudadIngresada.isNotEmpty()) {
+                        try {
+                            ciudadesSugeridas =
+                                apiClima.getCiudades(ciudadIngresada, 5, "5860473db9c726fdcf35b5c47e0aaa79").toList()
+                        } catch (e: Exception) {
+                            ciudadesSugeridas = emptyList()
+                        }
+                    }
+                }
             },
+            label = { Text("Ingrese la ciudad") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        LazyColumn {
+            items(ciudadesSugeridas) { ciudad ->
+                Text(
+                    text = ciudad.nombre,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clickable { navHostController.navigate("clima/${ciudad.nombre}") }
+                )
+            }
+        }
+        Button(
+            onClick = { navHostController.navigate("clima/$ciudadIngresada") },
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("Buscar")
@@ -66,13 +87,10 @@ fun Ciudades(navHostController: NavHostController) {
     }
 }
 
-
-
 @Composable
-fun Botones(navHostController: NavHostController, acceso1: String, acceso2: String, acceso3: String, acceso4: String) {
+fun Botones(navHostController: NavHostController, ciudad1: String, ciudad2: String, ciudad3: String, ciudad4: String) {
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier
@@ -82,7 +100,7 @@ fun Botones(navHostController: NavHostController, acceso1: String, acceso2: Stri
         ) {
             Button(
                 onClick = {
-                    navHostController.navigate("clima/$acceso1")
+                    navHostController.navigate("clima/$ciudad1")
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -92,11 +110,11 @@ fun Botones(navHostController: NavHostController, acceso1: String, acceso2: Stri
                     contentColor = Color.White
                 )
             ) {
-                Text(acceso1)
+                Text(ciudad1)
             }
             Button(
                 onClick = {
-                    navHostController.navigate("clima/$acceso2")
+                    navHostController.navigate("clima/$ciudad2")
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -106,7 +124,7 @@ fun Botones(navHostController: NavHostController, acceso1: String, acceso2: Stri
                     contentColor = Color.Black
                 )
             ) {
-                Text(acceso2)
+                Text(ciudad2)
             }
         }
         Row(
@@ -117,7 +135,7 @@ fun Botones(navHostController: NavHostController, acceso1: String, acceso2: Stri
         ) {
             Button(
                 onClick = {
-                    navHostController.navigate("clima/$acceso3")
+                    navHostController.navigate("clima/$ciudad3")
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -127,11 +145,11 @@ fun Botones(navHostController: NavHostController, acceso1: String, acceso2: Stri
                     contentColor = Color.White
                 )
             ) {
-                Text(acceso3)
+                Text(ciudad3)
             }
             Button(
                 onClick = {
-                    navHostController.navigate("clima/$acceso4")
+                    navHostController.navigate("clima/$ciudad4")
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -141,7 +159,7 @@ fun Botones(navHostController: NavHostController, acceso1: String, acceso2: Stri
                     contentColor = Color.Black
                 )
             ) {
-                Text(acceso4)
+                Text(ciudad4)
             }
         }
     }

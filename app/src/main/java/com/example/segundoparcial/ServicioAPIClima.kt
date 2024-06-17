@@ -7,20 +7,37 @@ import retrofit2.http.Query
 
 interface ServicioAPIClima {
     @GET("data/2.5/weather")
-    suspend fun getCurrentWeather(
+    suspend fun getClimaActual(
         @Query("q") city: String,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String = "es"
     ): RespuestaClima
+
+    @GET("data/2.5/forecast/daily")
+    suspend fun getPronosticoSemanal(
+        @Query("q") city: String,
+        @Query("appid") apiKey: String,
+        @Query("units") units: String = "metric",
+        @Query("cnt") count: Int = 7,
+        @Query("lang") lang: String = "es"
+    ): RespuestaPronosticoSemanal
+
+    @GET("geo/1.0/direct")
+    suspend fun getCiudades(
+        @Query("q") city: String,
+        @Query("limit") limit: Int = 100,
+        @Query("appid") apiKey: String
+    ): Array<Ciudad>
 }
+//https://api.openweathermap.org/geo/1.0/direct
 
 object RetrofitClient {
-    private const val BASE_URL = "https://api.openweathermap.org/"
+    private const val root = "https://api.openweathermap.org/"
 
     val instance: ServicioAPIClima by lazy {
         val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(root)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
