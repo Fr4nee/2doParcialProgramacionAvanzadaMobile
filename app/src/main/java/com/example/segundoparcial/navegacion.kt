@@ -1,5 +1,7 @@
 package com.example.segundoparcial.navegacion
+
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,7 +15,7 @@ fun AppNavigation() {
         composable("ciudades") { Ciudades(navController) }
         composable("clima/{ciudad}") { backStackEntry ->
             val ciudad = backStackEntry.arguments?.getString("ciudad") ?: ""
-            Clima(ciudad)
+            Clima(navController, ciudad)
         }
     }
 }
