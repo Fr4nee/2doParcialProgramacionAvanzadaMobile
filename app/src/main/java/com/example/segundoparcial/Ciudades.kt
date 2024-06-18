@@ -70,11 +70,11 @@ fun Ciudades(navHostController: NavHostController, apiClima: ServicioAPIClima) {
         LazyColumn {
             items(ciudadesSugeridas) { ciudad ->
                 Text(
-                    text = ciudad.nombre,
+                    text = ciudad.name,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .clickable { navHostController.navigate("clima/${ciudad.nombre}") }
+                        .clickable { navHostController.navigate("clima/${ciudad.name}") }
                 )
             }
         }

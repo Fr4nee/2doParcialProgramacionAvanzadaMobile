@@ -132,33 +132,5 @@ fun ClimaPagePreview() {
 
 @Composable
 fun ClimaPreview() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "",
-            fontSize = 40.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(20.dp)
-        )
-        Text(
-            text = "",
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(20.dp)
-        )
-        Text(
-            text = "",
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(20.dp)
-        )
-        Button(
-            onClick = { },
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Text("Volver")
-        }
-    }
+
 }
